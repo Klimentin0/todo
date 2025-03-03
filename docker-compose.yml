@@ -1,0 +1,73 @@
+
+services:
+#------------------------------------------------------------
+  api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: laravel-api
+    ports:
+      - "8000:80"
+    volumes:
+      - ./api:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=todo
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+    networks:
+      todo-network:
+        aliases:
+          - api.local
+    entrypoint: /var/www/html/docker/entrypoint.sh
+#------------------------------------------------------------
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      todo-network:
+        aliases:
+          - frontend.local
+    volumes:
+      - ./frontend:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+#------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    volumes:
+      - ./db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=todo
+    ports:
+      - "3306:3306"
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  
+
+#------------------------------------------------------------
+volumes:
+  db_data:
+
+#------------------------------------------------------------
+networks:
+  todo-network:
+    driver: bridge

@@ -12,7 +12,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return Task::all();
+        return response()->json(Task::all());
     }
 
     /**
@@ -34,7 +34,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return $task;
+        return response()->json($task);
     }
 
     /**

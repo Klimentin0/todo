@@ -1,6 +1,5 @@
 FROM php:8.3.11-apache
 
-# Установка зависимостей
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg62-turbo-dev \
@@ -15,22 +14,27 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-# Установка Composer
+
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Рабочая директория контейнера
 WORKDIR /var/www/html
 
-# Копирование проекта
 COPY . .
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-# Настройка прав доступа
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 755 /var/www/html
-# Включение модуля mod_rewrite
-# Открытие порта
+
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache \
+    && chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 80
 
 ENTRYPOINT ["entrypoint.sh"]

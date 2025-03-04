@@ -12,7 +12,8 @@ done
 # Run migrations
 echo "Running migrations..."
 php artisan migrate --force
-
+php artisan config:clear
+php artisan cache:clear
 # Start Apache in the foreground
 echo "Starting Apache..."
 exec apache2-foreground

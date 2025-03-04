@@ -12,12 +12,12 @@ export default defineConfig({
     ],
     server: {
         proxy: {
-        '/api': {
-            target: 'http://localhost:8000', // Прямая ссылка на Laravel
+          '/api': {
+            target: 'http://api', // Имя сервиса в Docker Compose
             changeOrigin: true,
-            rewrite: (path) => path, // Не удаляем префикс /api
+            rewrite: (path) => path.replace(/^\/api/, ''),
             secure: false
-      }
+          }
         }
       }
 });

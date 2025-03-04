@@ -31,6 +31,10 @@ docker compose up --build
 ```
 sudo docker compose up --build
 ```
+Программа будет готова, когда вы увидете в консоли:
+```
+Starting Apache...
+```
 Отображение в браузере происходит на:
 > http://localhost:3000/
 

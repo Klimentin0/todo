@@ -5,6 +5,7 @@ const TaskList = ({ onEditTask, refreshKey }) => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedTask, setSelectedTask] = useState(null); // Состояние для выбранной задачи
 
     const fetchTasks = async () => {
         try {
@@ -51,6 +52,10 @@ const TaskList = ({ onEditTask, refreshKey }) => {
         }
     };
 
+    const handleShowDescription = (task) => {
+        setSelectedTask(task); // Устанавливаем выбранную задачу
+    };
+
     if (loading) {
         return <p>Загрузка задач...</p>;
     }
@@ -78,9 +83,17 @@ const TaskList = ({ onEditTask, refreshKey }) => {
                             <button onClick={() => handleToggleComplete(task)}>
                                 {task.completed ? 'Отметить невыполненной' : 'Отметить выполненной'}
                             </button>
+                            <button onClick={() => handleShowDescription(task)}>Показать описание</button>
                         </li>
                     ))}
                 </ul>
+            )}
+            {selectedTask && (
+                <div>
+                    <h3>Описание задачи: {selectedTask.title}</h3>
+                    <p>{selectedTask.description || 'Описание отсутствует'}</p>
+                    <button onClick={() => setSelectedTask(null)}>Скрыть описание</button>
+                </div>
             )}
         </div>
     );

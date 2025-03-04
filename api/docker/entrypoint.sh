@@ -8,7 +8,7 @@ do
   echo "Waiting for MySQL connection..."
   sleep 5
 done
-
+composer install
 # Run migrations
 echo "Running migrations..."
 php artisan migrate --force

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { Button, ListGroup, Card, Alert, Badge } from 'react-bootstrap';
 import api from '../api/api';
 
 const TaskList = ({ onEditTask, refreshKey }) => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedTask, setSelectedTask] = useState(null); // Состояние для выбранной задачи
+    const [selectedTask, setSelectedTask] = useState(null);
 
     const fetchTasks = async () => {
         try {
@@ -53,49 +54,100 @@ const TaskList = ({ onEditTask, refreshKey }) => {
     };
 
     const handleShowDescription = (task) => {
-        setSelectedTask(task); // Устанавливаем выбранную задачу
+        setSelectedTask(task);
     };
 
     if (loading) {
-        return <p>Загрузка задач...</p>;
+        return <Alert variant="info">Загрузка задач...</Alert>;
     }
 
     if (error) {
-        return <p className="error">{error}</p>;
+        return <Alert variant="danger">{error}</Alert>;
     }
 
     return (
-        <div>
-            <h2>Задачи</h2>
-            {tasks.length === 0 ? (
-                <p>Нет текущих задач.</p>
-            ) : (
-                <ul>
-                    {tasks.map((task) => (
-                        <li key={task.id}>
-                            <span style={{ 
-                                textDecoration: task.completed ? 'line-through' : 'none' 
-                            }}>
-                                {task.title}
-                            </span>
-                            <button onClick={() => onEditTask(task)}>Изменить</button>
-                            <button onClick={() => handleDelete(task.id)}>Удалить</button>
-                            <button onClick={() => handleToggleComplete(task)}>
-                                {task.completed ? 'Отметить невыполненной' : 'Отметить выполненной'}
-                            </button>
-                            <button onClick={() => handleShowDescription(task)}>Показать описание</button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-            {selectedTask && (
-                <div>
-                    <h3>Описание задачи: {selectedTask.title}</h3>
-                    <p>{selectedTask.description || 'Описание отсутствует'}</p>
-                    <button onClick={() => setSelectedTask(null)}>Скрыть описание</button>
-                </div>
-            )}
-        </div>
+        <Card>
+            <Card.Body>
+                <Card.Title as="h2" className="mb-4">Список задач</Card.Title>
+                
+                {tasks.length === 0 ? (
+                    <Alert variant="info">Нет текущих задач.</Alert>
+                ) : (
+                    <ListGroup>
+                        {tasks.map((task) => (
+                            <ListGroup.Item key={task.id} className="d-flex justify-content-between align-items-center">
+                                <div className="me-3">
+                                    <span 
+                                        style={{ 
+                                            textDecoration: task.completed ? 'line-through' : 'none',
+                                            fontSize: '1.1rem'
+                                        }}
+                                    >
+                                        {task.title}
+                                        {task.completed && (
+                                            <Badge bg="success" className="ms-2">Выполнено</Badge>
+                                        )}
+                                    </span>
+                                </div>
+                                
+                                <div>
+                                    <Button 
+                                        variant="outline-warning" 
+                                        size="sm" 
+                                        onClick={() => onEditTask(task)}
+                                        className="me-2"
+                                    >
+                                        Изменить
+                                    </Button>
+                                    <Button 
+                                        variant="outline-danger" 
+                                        size="sm" 
+                                        onClick={() => handleDelete(task.id)}
+                                        className="me-2"
+                                    >
+                                        Удалить
+                                    </Button>
+                                    <Button 
+                                        variant={task.completed ? "outline-secondary" : "outline-success"} 
+                                        size="sm" 
+                                        onClick={() => handleToggleComplete(task)}
+                                        className="me-2"
+                                    >
+                                        {task.completed ? 'Не выполнена' : 'Выполнена'}
+                                    </Button>
+                                    <Button 
+                                        variant="outline-info" 
+                                        size="sm" 
+                                        onClick={() => handleShowDescription(task)}
+                                    >
+                                        Описание
+                                    </Button>
+                                </div>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                )}
+
+                {selectedTask && (
+                    <Card className="mt-4">
+                        <Card.Body>
+                            <Card.Title as="h3" className="mb-3">
+                                Описание задачи: {selectedTask.title}
+                            </Card.Title>
+                            <Card.Text>
+                                {selectedTask.description || 'Описание отсутствует'}
+                            </Card.Text>
+                            <Button 
+                                variant="secondary" 
+                                onClick={() => setSelectedTask(null)}
+                            >
+                                Скрыть описание
+                            </Button>
+                        </Card.Body>
+                    </Card>
+                )}
+            </Card.Body>
+        </Card>
     );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button, Form, Alert } from 'react-bootstrap';
 import api from '../api/api';
 
 const TaskForm = ({ taskToEdit, onTaskSaved }) => {
@@ -27,26 +28,39 @@ const TaskForm = ({ taskToEdit, onTaskSaved }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {error && <p className="error">{error}</p>}
-            <div>
-                <label>Задача:</label>
-                <input
+        <Form onSubmit={handleSubmit} className="mb-4 card p-3">
+            {error && <Alert variant="danger">{error}</Alert>}
+            
+            <Form.Group className="mb-3">
+                <Form.Label>Задача:</Form.Label>
+                <Form.Control
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
+                    placeholder="Введите название задачи"
                 />
-            </div>
-            <div>
-                <label>Описание:</label>
-                <textarea
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+                <Form.Label>Описание:</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Добавьте описание задачи"
                 />
-            </div>
-            <button type="submit">{taskToEdit ? 'Изменить' : 'Добавить'}</button>
-        </form>
+            </Form.Group>
+
+            <Button 
+                variant={taskToEdit ? "warning" : "primary"} 
+                type="submit"
+                className="w-100"
+            >
+                {taskToEdit ? 'Изменить задачу' : 'Добавить задачу'}
+            </Button>
+        </Form>
     );
 };
 
